@@ -1,0 +1,5 @@
+name: PigletRewind
+main: com.pigletcraft.rewind.Rewind
+version: 1.0
+
+commands:
