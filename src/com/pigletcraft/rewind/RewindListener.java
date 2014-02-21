@@ -11,6 +11,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 import java.util.ArrayList;
@@ -39,6 +40,7 @@ public class RewindListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerInteract(PlayerInteractEvent event) {
+
         Player p = event.getPlayer();
         if (!p.isOp()) return;
 
@@ -73,10 +75,36 @@ public class RewindListener implements Listener {
                 }
 
                 boolean alt = false;
+
+                p.sendMessage("Block History for X: " + b.getX() + " Y: " + b.getY() + " Z:" + b.getZ());
+
                 for (LocationHistory h : history) {
-                    p.sendMessage((alt ? ChatColor.RED : ChatColor.YELLOW) + h.toString());
+                    p.sendMessage((alt ? ChatColor.GOLD : ChatColor.LIGHT_PURPLE) + h.toString());
                     alt = !alt;
                 }
+            }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onEntityExplode(EntityExplodeEvent event) {
+
+        Database db = new Database();
+
+        for (Block b : event.blockList()) {
+            int locationId = db.getLocationId(b.getX(), b.getY(), b.getZ(), 1);
+
+            LocationHistory locationHistory = new LocationHistory();
+
+            locationHistory.setLocationId(locationId);
+            locationHistory.setPlayerId(5);
+            locationHistory.setActionTypeId(ActionTypes.BREAK.getValue());
+            locationHistory.setTypeId(b.getTypeId());
+            locationHistory.setData(b.getData());
+
+            historyQueue.push(locationHistory);
+            if (thread.getState() == Thread.State.WAITING) {
+                LockSupport.unpark(thread);
             }
         }
     }

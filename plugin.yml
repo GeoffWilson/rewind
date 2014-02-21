@@ -3,3 +3,5 @@ main: com.pigletcraft.rewind.Rewind
 version: 1.0
 
 commands:
+  rewind:
+      permission: rewind.rewind

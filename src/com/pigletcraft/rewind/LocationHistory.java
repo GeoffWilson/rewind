@@ -1,10 +1,10 @@
 package com.pigletcraft.rewind;
 
+import org.bukkit.Location;
+import org.bukkit.Material;
+
 import java.sql.Timestamp;
 
-/**
- * Created by Benshiro on 16/02/14.
- */
 public class LocationHistory {
 
     private int locationId;
@@ -13,6 +13,25 @@ public class LocationHistory {
     private int playerId;
     private Timestamp timeStamp;
     private byte actionTypeId;
+
+    private String playerName;
+    private Location location;
+
+    public Location getLocation() {
+        return location;
+    }
+
+    public void setLocation(Location location) {
+        this.location = location;
+    }
+
+    public String getPlayerName() {
+        return playerName;
+    }
+
+    public void setPlayerName(String playerName) {
+        this.playerName = playerName;
+    }
 
     public int getLocationId() {
         return locationId;
@@ -64,6 +83,22 @@ public class LocationHistory {
 
     @Override
     public String toString() {
-        return String.format("Action: %d, Type: %d, Data: %d, Modified: %s", actionTypeId, typeId, data, timeStamp);
+
+        StringBuilder output = new StringBuilder();
+
+        output.append(playerName);
+
+        switch (actionTypeId) {
+            case 1:
+                output.append(" placed ");
+                break;
+            case 2:
+                output.append(" broke  ");
+                break;
+        }
+
+        output.append(Material.getMaterial(typeId).toString()).append(" at ").append(timeStamp);
+
+        return output.toString();
     }
 }
